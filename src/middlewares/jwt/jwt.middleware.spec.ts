@@ -1,7 +1,7 @@
-import {JwtMiddleware} from './jwt.middleware';
+import { JwtMiddleware } from './jwt.middleware';
 
 describe('JwtMiddleware', () => {
-    it('should be defined', () => {
-        expect(new JwtMiddleware()).toBeDefined();
-    });
+  it('should be defined', () => {
+    expect(new JwtMiddleware()).toBeDefined();
+  });
 });

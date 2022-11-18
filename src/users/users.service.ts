@@ -8,7 +8,8 @@ import { LoginUserInput } from './dtos/login-user.dto';
 import * as bcrypt from 'bcrypt';
 import { CommonOutputDto } from '../common/dtos/common-output.dto';
 import { ResetPasswordInput } from './dtos/reset-password.dto';
-import {MailService} from "../mail/mail.service";
+import { MailService } from '../mail/mail.service';
+import { UsersModule } from './users.module';
 
 @Injectable()
 export class UsersService {
@@ -16,9 +17,8 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-    private readonly mailService:MailService
-  ) {
-  }
+    private readonly mailService: MailService,
+  ) {}
 
   async registerUser({
     email,
@@ -26,14 +26,14 @@ export class UsersService {
     role,
   }: RegisterUserInput): Promise<{ ok: boolean; error?: string }> {
     try {
-      const existUser = await this.findUserByEmail(email);
+      const existUser: UserEntity | null = await this.findUserByEmail(email);
       if (existUser) return { ok: false, error: 'Invalid email address' };
-      const verificationCode = Math.floor(100000 + Math.random() * 900000) // generates 6 digits number
+      const verificationCode = Math.floor(100000 + Math.random() * 900000); // generates 6 digits number
       await this.userRepository.save(
-        this.userRepository.create({ email, password, role ,verificationCode}),
+        this.userRepository.create({ email, password, role, verificationCode }),
       );
-      this.mailService.sendVerificationCode(email,verificationCode.toString())
-      return { ok: true };
+      this.mailService.sendVerificationCode(email, verificationCode.toString());
+      return { ok: true, error: null };
     } catch (e) {
       return { ok: false, error: e.message };
     }
@@ -44,7 +44,7 @@ export class UsersService {
     password,
   }: LoginUserInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
-      const existUser = await this.findUserByEmail(email);
+      const existUser: UserEntity | null = await this.findUserByEmail(email);
       if (!existUser)
         return {
           ok: false,
@@ -57,7 +57,7 @@ export class UsersService {
           token: null,
           error: 'Make sure to verify your account first',
         };
-      if (!(await bcrypt.compare(password, existUser.password)))
+      if (!bcrypt.compareSync(password, existUser.password))
         return {
           ok: false,
           token: null,
@@ -73,7 +73,7 @@ export class UsersService {
   async findUserByEmail(
     email: string,
     select?: FindOptionsSelect<UserEntity>,
-  ): Promise<UserEntity> {
+  ): Promise<UserEntity | null> {
     return await this.userRepository.findOne({ where: { email }, select });
   }
 
@@ -103,13 +103,16 @@ export class UsersService {
 
   async resendVerificationCode(email: string): Promise<CommonOutputDto> {
     try {
-      const user = await this.findUserByEmail(email);
+      const user: UserEntity | null = await this.findUserByEmail(email);
       if (!user)
         return { ok: false, error: 'Please insert exist email address' };
       if (user.isVerified)
         return { ok: false, error: 'Your account is already verified' };
       const verificationCode = Math.floor(100000 + Math.random() * 900000);
-      this.mailService.sendVerificationCode(user.email,verificationCode.toString())
+      this.mailService.sendVerificationCode(
+        user.email,
+        verificationCode.toString(),
+      );
       await this.userRepository.update({ id: user.id }, { verificationCode });
       return { ok: true, error: null };
     } catch (e) {
@@ -122,7 +125,7 @@ export class UsersService {
 
   async sendResetPasswordLink(email: string): Promise<CommonOutputDto> {
     try {
-      const user = await this.findUserByEmail(email);
+      const user: UserEntity | null = await this.findUserByEmail(email);
       if (!user)
         return { ok: false, error: 'Please insert exist email address' };
       if (user.resetPasswordAttempts >= 3)
@@ -133,9 +136,12 @@ export class UsersService {
       const resetPasswordToken = await this.jwtService.signAsync(
         user.id.toString(),
       );
-      console.log(resetPasswordToken);
       const link = `${process.env.CLIENT_ADDRESS}/auth/reset_password/${resetPasswordToken}`;
-      this.mailService.sendEmail(user.email,"Reset your password" , `<a href=${link}>Please reset your password with this link</a>`)
+      this.mailService.sendEmail(
+        user.email,
+        'Reset your password',
+        `<a href=${link}>Please reset your password with this link</a>`,
+      );
       return { ok: true, error: null };
     } catch (e) {
       return {
@@ -150,7 +156,7 @@ export class UsersService {
     password,
   }: ResetPasswordInput): Promise<CommonOutputDto> {
     try {
-      const decoded = await this.jwtService.decode(token);
+      const decoded = await this.jwtService.verifyAsync(token);
       const user = await this.userRepository.findOneBy({ id: Number(decoded) });
       if (!user) return { ok: false, error: 'user not found' };
       return await this.changePassword(user, password);
@@ -172,7 +178,7 @@ export class UsersService {
           ok: false,
           error: 'You have reached maximum reset password attempts',
         };
-      if (await bcrypt.compare(password, user.password))
+      if (bcrypt.compareSync(password, user.password))
         return { ok: false, error: 'You cannot use your old password again' };
       const hashedPassword = await bcrypt.hash(password, 10);
       await this.userRepository.update(

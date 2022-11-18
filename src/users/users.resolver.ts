@@ -1,15 +1,21 @@
-import {Args, Context, Mutation, Query, Resolver,} from '@nestjs/graphql';
-import {UsersService} from './users.service';
-import {UserEntity} from './entities/user.entity';
-import {RegisterUserInput, RegisterUserOutput,} from './dtos/register-user.dto';
-import {LoginUserInput, LoginUserOutput} from './dtos/login-user.dto';
-import {ExecutionContext, UseGuards} from '@nestjs/common';
-import {AuthGuard} from '../guards/auth/auth.guard';
-import {CurrentUser} from '../decorators/current-user/current-user.decorator';
-import {CommonOutputDto} from '../common/dtos/common-output.dto';
-import {ChangePasswordInput, ResetPasswordInput,} from './dtos/reset-password.dto';
-import {EmailDto} from './dtos/email.dto';
-import {VerifyUserDto} from './dtos/verify-user.dto';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UsersService } from './users.service';
+import { UserEntity } from './entities/user.entity';
+import {
+  RegisterUserInput,
+  RegisterUserOutput,
+} from './dtos/register-user.dto';
+import { LoginUserInput, LoginUserOutput } from './dtos/login-user.dto';
+import { ExecutionContext, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../guards/auth/auth.guard';
+import { CurrentUser } from '../decorators/current-user/current-user.decorator';
+import { CommonOutputDto } from '../common/dtos/common-output.dto';
+import {
+  ChangePasswordInput,
+  ResetPasswordInput,
+} from './dtos/reset-password.dto';
+import { EmailDto } from './dtos/email.dto';
+import { VerifyUserDto } from './dtos/verify-user.dto';
 
 @Resolver((resolver) => UserEntity)
 export class UsersResolver {
