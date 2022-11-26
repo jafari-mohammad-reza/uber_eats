@@ -11,6 +11,7 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+  // app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }));
   await app.listen(3000);
 }
 

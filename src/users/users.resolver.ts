@@ -8,8 +8,8 @@ import {
 import { LoginUserInput, LoginUserOutput } from './dtos/login-user.dto';
 import { ExecutionContext, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../guards/auth/auth.guard';
-import { CurrentUser } from '../decorators/current-user/current-user.decorator';
-import { CommonOutputDto } from '../common/dtos/common-output.dto';
+import { CurrentUser } from '../decorators/current-user.decorator';
+import { CoreOutputDto } from '../common/dtos/common-output.dto';
 import {
   ChangePasswordInput,
   ResetPasswordInput,
@@ -50,28 +50,28 @@ export class UsersResolver {
     }
   }
 
-  @Mutation((returns) => CommonOutputDto)
+  @Mutation((returns) => CoreOutputDto)
   async verifyUser(@Args('input') { verificationCode }: VerifyUserDto) {
     return await this.usersService.verifyAccount(verificationCode);
   }
 
-  @Mutation((returns) => CommonOutputDto)
+  @Mutation((returns) => CoreOutputDto)
   async resendVerificationCode(@Args('input') { email }: EmailDto) {
     return await this.usersService.resendVerificationCode(email);
   }
 
-  @Mutation((returns) => CommonOutputDto)
+  @Mutation((returns) => CoreOutputDto)
   async forgotPassword(@Args('input') { email }: EmailDto) {
     return await this.usersService.sendResetPasswordLink(email);
   }
 
-  @Mutation((returns) => CommonOutputDto)
+  @Mutation((returns) => CoreOutputDto)
   async resetPassword(@Args('input') resetPasswordInput: ResetPasswordInput) {
     return await this.usersService.resetPassword(resetPasswordInput);
   }
 
   @UseGuards(AuthGuard)
-  @Mutation((returns) => CommonOutputDto)
+  @Mutation((returns) => CoreOutputDto)
   async changePassword(
     @Args('input') { password, confirmPassword }: ChangePasswordInput,
     @CurrentUser() user: UserEntity,

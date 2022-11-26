@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import {
   Field,
   InputType,
@@ -8,11 +8,12 @@ import {
 import { CoreEntity } from '../../common/entities/core.entity';
 import { IsEmail, IsEnum, IsString, Length, Matches } from 'class-validator';
 import * as bcrypt from 'bcrypt';
+import { RestaurantEntity } from '../../restaurant/restaurant.entity';
 
 export enum UserRoles {
-  Client,
-  Owner,
-  Delivery,
+  Client = 'Client',
+  Owner = 'Owner',
+  Delivery = 'Delivery',
 }
 
 registerEnumType(UserRoles, { name: 'UserRoles' });
@@ -21,8 +22,6 @@ registerEnumType(UserRoles, { name: 'UserRoles' });
 @ObjectType()
 @Entity()
 export class UserEntity extends CoreEntity {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
   @Column({
     type: 'varchar',
     nullable: false,
@@ -76,6 +75,11 @@ export class UserEntity extends CoreEntity {
   verificationCode: number;
   @Column({ name: 'resetPasswordAttempts', type: 'int', default: 0 })
   resetPasswordAttempts: number;
+  @OneToMany((type) => RestaurantEntity, (restaurant) => restaurant.owner, {
+    nullable: true,
+  })
+  @Field((type) => [RestaurantEntity], { nullable: true })
+  restaurants?: RestaurantEntity[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

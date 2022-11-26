@@ -6,10 +6,9 @@ import { RegisterUserInput } from './dtos/register-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserInput } from './dtos/login-user.dto';
 import * as bcrypt from 'bcrypt';
-import { CommonOutputDto } from '../common/dtos/common-output.dto';
+import { CoreOutputDto } from '../common/dtos/common-output.dto';
 import { ResetPasswordInput } from './dtos/reset-password.dto';
 import { MailService } from '../mail/mail.service';
-import { UsersModule } from './users.module';
 
 @Injectable()
 export class UsersService {
@@ -81,7 +80,7 @@ export class UsersService {
     return await this.jwtService.verifyAsync(token);
   }
 
-  async verifyAccount(verificationCode: number): Promise<CommonOutputDto> {
+  async verifyAccount(verificationCode: number): Promise<CoreOutputDto> {
     try {
       const user = await this.userRepository.findOneBy({
         verificationCode: verificationCode,
@@ -101,7 +100,7 @@ export class UsersService {
     }
   }
 
-  async resendVerificationCode(email: string): Promise<CommonOutputDto> {
+  async resendVerificationCode(email: string): Promise<CoreOutputDto> {
     try {
       const user: UserEntity | null = await this.findUserByEmail(email);
       if (!user)
@@ -123,7 +122,7 @@ export class UsersService {
     }
   }
 
-  async sendResetPasswordLink(email: string): Promise<CommonOutputDto> {
+  async sendResetPasswordLink(email: string): Promise<CoreOutputDto> {
     try {
       const user: UserEntity | null = await this.findUserByEmail(email);
       if (!user)
@@ -154,7 +153,7 @@ export class UsersService {
   async resetPassword({
     token,
     password,
-  }: ResetPasswordInput): Promise<CommonOutputDto> {
+  }: ResetPasswordInput): Promise<CoreOutputDto> {
     try {
       const decoded = await this.jwtService.verifyAsync(token);
       const user = await this.userRepository.findOneBy({ id: Number(decoded) });
@@ -171,7 +170,7 @@ export class UsersService {
   async changePassword(
     user: UserEntity,
     password: string,
-  ): Promise<CommonOutputDto> {
+  ): Promise<CoreOutputDto> {
     try {
       if (user.resetPasswordAttempts >= 3)
         return {

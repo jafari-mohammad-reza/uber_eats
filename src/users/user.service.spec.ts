@@ -1,15 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../mail/mail.service';
 import { MockRepositoryType } from '../common/types/testing.types';
 import * as bcrypt from 'bcrypt';
-import { UsersModule } from './users.module';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { AppModule } from '../app.module';
 
 const mockRepository = {
   save: jest.fn(),

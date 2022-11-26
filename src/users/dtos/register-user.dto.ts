@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { UserEntity } from '../entities/user.entity';
 import { IsString, Length } from 'class-validator';
-import { CommonOutputDto } from '../../common/dtos/common-output.dto';
+import { CoreOutputDto } from '../../common/dtos/common-output.dto';
 import { Match } from '../../common/decorators/match.decorator';
 
 @InputType()
@@ -23,4 +23,4 @@ export class RegisterUserInput extends PickType(UserEntity, [
 }
 
 @ObjectType()
-export class RegisterUserOutput extends CommonOutputDto {}
+export class RegisterUserOutput extends CoreOutputDto {}

@@ -15,6 +15,11 @@ import { UserEntity } from './users/entities/user.entity';
 import { JwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
+import { CategoryModule } from './category/category.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
+import { CategoryEntity } from './category/category.entity';
+import { RestaurantEntity } from './restaurant/restaurant.entity';
+import { GraphQLJSON } from 'graphql-type-json';
 
 @Module({
   imports: [
@@ -37,11 +42,13 @@ import { MailModule } from './mail/mail.module';
       type: 'postgres',
       url: process.env.POSTGRES_URL,
       synchronize: process.env.NODE_ENV !== 'prod',
-      entities: [UserEntity],
+      entities: [UserEntity, CategoryEntity, RestaurantEntity],
     }),
     MailModule,
     UsersModule,
     CommonModule,
+    CategoryModule,
+    RestaurantModule,
   ],
   providers: [JwtService],
 })
