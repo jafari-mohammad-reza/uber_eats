@@ -9,7 +9,7 @@ import { LoginUserInput, LoginUserOutput } from './dtos/login-user.dto';
 import { ExecutionContext, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../guards/auth/auth.guard';
 import { CurrentUser } from '../decorators/current-user/current-user.decorator';
-import { CommonOutputDto } from '../common/dtos/common-output.dto';
+import { CommonOutputDto } from '../common/dtos/commonOutputDto';
 import {
   ChangePasswordInput,
   ResetPasswordInput,

@@ -6,10 +6,9 @@ import { RegisterUserInput } from './dtos/register-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserInput } from './dtos/login-user.dto';
 import * as bcrypt from 'bcrypt';
-import { CommonOutputDto } from '../common/dtos/common-output.dto';
+import { CommonOutputDto } from '../common/dtos/commonOutputDto';
 import { ResetPasswordInput } from './dtos/reset-password.dto';
 import { MailService } from '../mail/mail.service';
-import { UsersModule } from './users.module';
 
 @Injectable()
 export class UsersService {

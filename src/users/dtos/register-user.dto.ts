@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { UserEntity } from '../entities/user.entity';
 import { IsString, Length } from 'class-validator';
-import { CommonOutputDto } from '../../common/dtos/common-output.dto';
+import { CommonOutputDto } from '../../common/dtos/commonOutputDto';
 import { Match } from '../../common/decorators/match.decorator';
 
 @InputType()
