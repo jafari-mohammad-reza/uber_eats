@@ -1,10 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import {
   Field,
   InputType,
@@ -28,8 +22,6 @@ registerEnumType(UserRoles, { name: 'UserRoles' });
 @ObjectType()
 @Entity()
 export class UserEntity extends CoreEntity {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
   @Column({
     type: 'varchar',
     nullable: false,

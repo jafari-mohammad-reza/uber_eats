@@ -1,65 +1,69 @@
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { CoreEntity, GeoLocation } from '../../common/entities/core.entity';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { CoreEntity } from '../../common/entities/core.entity';
-import { CategoryEntity } from '../../category/category.entity';
-import { UserEntity } from '../../users/entities/user.entity';
+import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { IsOptional, IsString } from 'class-validator';
 import { CloudinaryContent } from '../../cloudinary/models';
-import { IsJSON, IsOptional, IsString } from 'class-validator';
-
-@InputType('GeoLocationInputType', { isAbstract: true })
-@ObjectType()
-export class GeoLocation {
-  @Field((type) => Number)
-  Latitude: number;
-  @Field((type) => Number)
-  Longitude: number;
-}
+import { CategoryEntity } from './category.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
 export class RestaurantEntity extends CoreEntity {
-  @Column({ type: 'varchar', nullable: false, unique: true, name: 'title' })
-  @Field((type) => String, { name: 'title', nullable: false })
+  @Column({ type: 'varchar', nullable: false, name: 'title' })
+  @Field((type) => String, {
+    nullable: false,
+    name: 'title',
+    description: 'name of restaurant',
+  })
   @IsString()
   title: string;
-  @Column({
-    type: 'varchar',
-    nullable: false,
-    unique: true,
+  @Column({ type: 'varchar', nullable: true, name: 'description' })
+  @Field((type) => String, {
+    nullable: true,
     name: 'description',
   })
-  @Field((type) => String, { name: 'description', nullable: false })
   @IsString()
-  description: string;
-  @Column({ type: 'varchar', nullable: false, unique: true, name: 'address' })
-  @Field((type) => String, { name: 'address', nullable: false })
+  @IsOptional()
+  description?: string;
+  @Column({ type: 'json', nullable: false, name: 'coverImage' })
+  @Field((type) => CloudinaryContent, {
+    nullable: false,
+    name: 'coverImage',
+  })
+  coverImage: CloudinaryContent;
+  @Column({ type: 'json', nullable: true, name: 'teaserVideo' })
+  @Field((type) => CloudinaryContent, {
+    nullable: true,
+    name: 'teaserVideo',
+  })
+  @IsOptional()
+  teaserVideo: CloudinaryContent;
+  @Column({ type: 'varchar', nullable: false, name: 'address' })
+  @Field((type) => String, {
+    nullable: false,
+    name: 'address',
+  })
   @IsString()
   address: string;
-  @Column({ type: 'json', nullable: false, name: 'image' })
-  @Field((type) => CloudinaryContent, { name: 'image', nullable: false })
-  @IsJSON()
-  image: CloudinaryContent;
-  @Column({ type: 'json', nullable: true, name: 'teaser_video' })
-  @Field((type) => CloudinaryContent, { name: 'teaserVideo', nullable: true })
-  @IsJSON()
-  @IsOptional()
-  teaser_video?: CloudinaryContent;
-  @Column({ type: 'json', nullable: true, name: 'geo_location' })
-  @Field((type) => GeoLocation, { name: 'geoLocation', nullable: true })
-  @IsJSON()
+  @Column({ type: 'json', nullable: true, name: 'geoLocation' })
+  @Field((type) => GeoLocation, { nullable: true })
   @IsOptional()
   geoLocation?: GeoLocation;
   @ManyToOne((type) => CategoryEntity, (category) => category.restaurants, {
-    nullable: true,
+    nullable: false,
     onDelete: 'SET NULL',
-    eager: true,
   })
-  @Field((type) => CategoryEntity)
+  @Field((type) => CategoryEntity, { nullable: false })
   category: CategoryEntity;
-  @ManyToOne((type) => UserEntity, (owner) => owner.restaurants)
-  @Field((type) => UserEntity)
+  @RelationId((restaurant: RestaurantEntity) => restaurant.category)
+  categoryId: number;
+  @ManyToOne((type) => UserEntity, (user) => user.restaurants, {
+    nullable: false,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => UserEntity, { nullable: false })
   owner: UserEntity;
-  @RelationId((user: UserEntity) => user.id)
+  @RelationId((restaurant: RestaurantEntity) => restaurant.owner)
   ownerId: number;
 }

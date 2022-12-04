@@ -15,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
 

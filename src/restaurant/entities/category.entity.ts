@@ -1,8 +1,8 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { CoreEntity } from '../common/entities/core.entity';
-import { CloudinaryContent } from '../cloudinary/models';
-import { RestaurantEntity } from '../restaurant/entities/restaurant.entity';
+import { CoreEntity } from '../../common/entities/core.entity';
+import { CloudinaryContent } from '../../cloudinary/models';
+import { RestaurantEntity } from './restaurant.entity';
 import { IsJSON, IsString } from 'class-validator';
 
 @InputType({ isAbstract: true })
