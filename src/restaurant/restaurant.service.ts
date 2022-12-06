@@ -129,9 +129,16 @@ export class RestaurantService {
 
   async updateRestaurant(
     input: UpdateRestaurantInputType,
+    user: UserEntity,
   ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(input.id);
+      if (user !== restaurant.owner) {
+        return {
+          ok: false,
+          error: 'You are not this restaurant owner',
+        };
+      }
       if (!restaurant) {
         return {
           ok: false,
@@ -174,9 +181,18 @@ export class RestaurantService {
       };
     }
   }
-  async deleteRestaurant(id: number): Promise<CommonOutputDto> {
+  async deleteRestaurant(
+    id: number,
+    user: UserEntity,
+  ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(id);
+      if (user !== restaurant.owner) {
+        return {
+          ok: false,
+          error: 'You are not this restaurant owner',
+        };
+      }
       if (!restaurant)
         return { ok: false, error: 'There is no restaurant with this id' };
       this.cloudinaryService

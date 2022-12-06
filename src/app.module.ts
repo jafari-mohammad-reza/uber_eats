@@ -21,6 +21,7 @@ import { RestaurantModule } from './restaurant/restaurant.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { RestaurantEntity } from './restaurant/restaurant.entity';
 import { CategoryEntity } from './category/category.entity';
+import { MenueItemModule } from './menue-item/menue-item.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { CategoryEntity } from './category/category.entity';
     CategoryModule,
     RestaurantModule,
     UploadsModule,
+    MenueItemModule,
   ],
   providers: [JwtService],
 })

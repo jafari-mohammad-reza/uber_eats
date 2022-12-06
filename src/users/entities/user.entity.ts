@@ -11,9 +11,10 @@ import * as bcrypt from 'bcrypt';
 import { RestaurantEntity } from '../../restaurant/restaurant.entity';
 
 export enum UserRoles {
-  Client,
-  Owner,
-  Delivery,
+  Client = 'Client',
+  Owner = 'Owner',
+  Delivery = 'Delivery',
+  Admin = 'Admin',
 }
 
 registerEnumType(UserRoles, { name: 'UserRoles' });
@@ -55,12 +56,11 @@ export class UserEntity extends CoreEntity {
     type: 'enum',
     enum: UserRoles,
     nullable: false,
-    default: UserRoles.Client,
   })
   @Field((type) => UserRoles, {
     name: 'role',
     nullable: false,
-    defaultValue: UserRoles.Client,
+    defaultValue: 'Client',
   })
   @IsEnum(UserRoles)
   role: UserRoles;

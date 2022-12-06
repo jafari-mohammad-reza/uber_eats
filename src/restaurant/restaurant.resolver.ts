@@ -16,8 +16,12 @@ import {
 } from './dtos/modify-restaurant.dto';
 import { CurrentUser } from '../decorators/current-user/current-user.decorator';
 import { UserEntity } from '../users/entities/user.entity';
+import { RightRoleGuard } from '../guards/right-role/right-role.guard';
+import { UseGuards } from '@nestjs/common';
+import { Role } from '../decorators/role/roles.decorator';
 
 @Resolver((of) => RestaurantEntity)
+@UseGuards(RightRoleGuard)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
   @Query((returns) => [RestaurantEntity])
@@ -43,6 +47,7 @@ export class RestaurantResolver {
     });
   }
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Owner'])
   async createRestaurant(
     @Args('input') input: CreateRestaurantInputType,
     @CurrentUser() user: UserEntity,
@@ -50,14 +55,19 @@ export class RestaurantResolver {
     return await this.restaurantService.createRestaurant(input, user);
   }
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Owner'])
   async updateRestaurant(
     @Args('input') input: UpdateRestaurantInputType,
     @CurrentUser() user: UserEntity,
   ) {
-    return await this.restaurantService.updateRestaurant(input);
+    return await this.restaurantService.updateRestaurant(input, user);
   }
   @Mutation((returns) => CommonOutputDto)
-  async deleteRestaurant(@Args('id') id: number): Promise<CommonOutputDto> {
-    return await this.restaurantService.deleteRestaurant(id);
+  @Role(['Owner'])
+  async deleteRestaurant(
+    @Args('id') id: number,
+    @CurrentUser() user: UserEntity,
+  ): Promise<CommonOutputDto> {
+    return await this.restaurantService.deleteRestaurant(id, user);
   }
 }

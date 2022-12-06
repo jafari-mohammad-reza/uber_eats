@@ -12,8 +12,12 @@ import {
 } from './dtos/get-category.dto';
 import { CategoryEntity } from './category.entity';
 import { CategoryService } from './category.service';
+import { UseGuards } from '@nestjs/common';
+import { RightRoleGuard } from '../guards/right-role/right-role.guard';
+import { Role } from '../decorators/role/roles.decorator';
 
 @Resolver((returns) => CategoryEntity)
+@UseGuards(RightRoleGuard)
 export class CategoryResolver {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -40,6 +44,7 @@ export class CategoryResolver {
   }
 
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Admin', 'Owner'])
   async createCategory(
     @Args('input') inputDto: CreateCategoryInputType,
   ): Promise<CommonOutputDto> {
@@ -47,6 +52,7 @@ export class CategoryResolver {
   }
 
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Admin'])
   async updateCategory(
     @Args('input') inputDto: UpdateCategoryInputType,
   ): Promise<CommonOutputDto> {
@@ -54,6 +60,7 @@ export class CategoryResolver {
   }
 
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Admin'])
   async deleteCategory(@Args('id') id: number): Promise<CommonOutputDto> {
     return await this.categoryService.deleteOne(id);
   }
