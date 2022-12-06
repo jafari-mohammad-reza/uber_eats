@@ -32,12 +32,7 @@ import { CategoryEntity } from './category/category.entity';
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       playground: true,
-      context: ({ req, connection }) => {
-        const TOKEN_KEY = 'x-jwt';
-        return {
-          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
-        };
-      },
+      context: ({ req }) => ({ user: req['user'] }),
       cors: {
         credentials: true,
         origin: true,

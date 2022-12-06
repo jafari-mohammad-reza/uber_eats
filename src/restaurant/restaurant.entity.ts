@@ -1,7 +1,7 @@
 import { CoreEntity, GeoLocation } from '../common/entities/core.entity';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
-import { IsOptional, IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 import { CloudinaryContent } from '../cloudinary/models';
 import { CategoryEntity } from '../category/category.entity';
 import { UserEntity } from '../users/entities/user.entity';
@@ -31,14 +31,16 @@ export class RestaurantEntity extends CoreEntity {
     nullable: false,
     name: 'coverImage',
   })
+  @IsObject()
   coverImage: CloudinaryContent;
   @Column({ type: 'json', nullable: true, name: 'teaserVideo' })
   @Field((type) => CloudinaryContent, {
     nullable: true,
     name: 'teaserVideo',
   })
+  @IsObject()
   @IsOptional()
-  teaserVideo: CloudinaryContent;
+  teaserVideo?: CloudinaryContent;
   @Column({ type: 'varchar', nullable: false, name: 'address' })
   @Field((type) => String, {
     nullable: false,
@@ -49,6 +51,7 @@ export class RestaurantEntity extends CoreEntity {
   @Column({ type: 'json', nullable: true, name: 'geoLocation' })
   @Field((type) => GeoLocation, { nullable: true })
   @IsOptional()
+  @IsObject()
   geoLocation?: GeoLocation;
   @ManyToOne((type) => CategoryEntity, (category) => category.restaurants, {
     nullable: false,

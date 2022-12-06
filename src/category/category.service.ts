@@ -15,6 +15,7 @@ import {
   GetCategoryOutputType,
 } from './dtos/get-category.dto';
 import { CloudinaryService } from '../cloudinary/clodinary.service';
+import { DefaultImage } from '../common/constants';
 
 @Injectable()
 export class CategoryService {
@@ -31,18 +32,15 @@ export class CategoryService {
     });
   }
 
-  async getOrCreate(category: string | number): Promise<CategoryEntity> {
-    const existCategory = await this.categoryRepository.findOne({
-      where: [{ id: Number(category) }, { title: category.toString() }],
+  async getOrCreate(category: string): Promise<CategoryEntity> {
+    const existCategory = await this.categoryRepository.findOneBy({
+      title: category,
     });
     if (!existCategory) {
-      if (typeof category == 'number') {
-        throw Error('There is no category with this id');
-      } else {
-        return await this.categoryRepository.save({
-          title: category.toString(),
-        });
-      }
+      return await this.categoryRepository.save({
+        title: category,
+        image: DefaultImage,
+      });
     }
     return existCategory;
   }

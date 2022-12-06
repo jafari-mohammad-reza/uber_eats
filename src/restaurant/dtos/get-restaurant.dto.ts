@@ -4,6 +4,7 @@ import {
   CommonInputDto,
   CommonOutputDto,
 } from '../../common/dtos/commonOutputDto';
+import { IsString } from 'class-validator';
 
 @ObjectType()
 export class GetRestaurantOutput extends CommonOutputDto {
@@ -23,5 +24,6 @@ export class GetRestaurantsOutput extends CommonOutputDto {
 @InputType()
 export class GetRestaurantsInput extends CommonInputDto {
   @Field((type) => String, { nullable: false })
+  @IsString()
   inputTitle: string;
 }

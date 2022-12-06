@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { IsLatitude, IsLongitude } from 'class-validator';
 
 export class CoreEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -26,7 +27,9 @@ export class CoreEntity extends BaseEntity {
 @ObjectType()
 export class GeoLocation {
   @Field((type) => Number)
+  @IsLatitude()
   Latitude: number;
   @Field((type) => Number)
+  @IsLongitude()
   Longitude: number;
 }
