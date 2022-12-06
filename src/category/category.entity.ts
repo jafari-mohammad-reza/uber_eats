@@ -1,9 +1,9 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { CoreEntity } from '../common/entities/core.entity';
+import { IsObject, IsString } from 'class-validator';
 import { CloudinaryContent } from '../cloudinary/models';
-import { RestaurantEntity } from '../restaurant/entities/restaurant.entity';
-import { IsJSON, IsString } from 'class-validator';
+import { RestaurantEntity } from '../restaurant/restaurant.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -14,10 +14,10 @@ export class CategoryEntity extends CoreEntity {
   @IsString()
   title: string;
   @Column({ type: 'json', nullable: false, name: 'image' })
-  @Field((type) => CloudinaryContent, { name: 'image', nullable: false })
-  @IsJSON()
+  @Field((type) => CloudinaryContent, { nullable: false })
+  @IsObject()
   image: CloudinaryContent;
   @OneToMany((type) => RestaurantEntity, (restaurant) => restaurant.category)
-  @Field((type) => [RestaurantEntity])
+  @Field((type) => [RestaurantEntity], { nullable: true })
   restaurants?: RestaurantEntity[];
 }

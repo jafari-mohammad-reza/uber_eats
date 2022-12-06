@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
@@ -6,7 +7,7 @@ import {
 } from 'typeorm';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
-export class CoreEntity {
+export class CoreEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Field((type) => Number, { nullable: false, name: 'id' })
   id: number;
@@ -20,6 +21,10 @@ export class CoreEntity {
   @Field((type) => Boolean, { defaultValue: true })
   isActive: Boolean;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 @InputType('GeoLocationInputType', { isAbstract: true })
 @ObjectType()
 export class GeoLocation {
