@@ -1,10 +1,11 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import {
   CommonInputDto,
   CommonOutputDto,
 } from '../../common/dtos/commonOutputDto';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CategoryEntity } from '../category.entity';
-import { RestaurantEntity } from '../../restaurant/entities/restaurant.entity';
+import { RestaurantEntity } from '../../restaurant/restaurant.entity';
+import { IsNumber, IsString } from 'class-validator';
 
 @ObjectType()
 export class GetCategoryOutputType extends CommonOutputDto {
@@ -18,12 +19,14 @@ export class GetCategoryOutputType extends CommonOutputDto {
 
 @InputType()
 export class GetCategoryByIdInput extends CommonInputDto {
-  @Field((type) => Number)
+  @Field((type) => Int, { name: 'id', nullable: false })
+  @IsNumber()
   id: number;
 }
 
 @InputType()
 export class GetCategoryBySlugInput extends CommonInputDto {
-  @Field((type) => String)
+  @Field((type) => String, { nullable: false, name: 'slug' })
+  @IsString()
   slug: string;
 }

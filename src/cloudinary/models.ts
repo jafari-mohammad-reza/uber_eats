@@ -5,6 +5,6 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 export class CloudinaryContent {
   @Field((type) => String)
   url: string;
-  @Field((type) => Number)
+  @Field((type) => String)
   publicId: string;
 }

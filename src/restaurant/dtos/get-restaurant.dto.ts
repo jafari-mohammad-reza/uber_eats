@@ -1,9 +1,9 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { RestaurantEntity } from '../entities/restaurant.entity';
+import { RestaurantEntity } from '../restaurant.entity';
 import {
   CommonInputDto,
   CommonOutputDto,
 } from '../../common/dtos/commonOutputDto';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class GetRestaurantOutput extends CommonOutputDto {

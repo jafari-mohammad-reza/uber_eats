@@ -1,17 +1,17 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CategoryEntity } from './category.entity';
-import { CategoryService } from './category/category.service';
 import {
   CommonInputDto,
   CommonOutputDto,
 } from '../common/dtos/commonOutputDto';
+import { UpdateCategoryInputType } from './dtos/update-category.dto';
+import { CreateCategoryInputType } from './dtos/create-category.dto';
 import {
   GetCategoryByIdInput,
   GetCategoryBySlugInput,
   GetCategoryOutputType,
 } from './dtos/get-category.dto';
-import { CreateCategoryInputType } from './dtos/create-category.dto';
-import { UpdateCategoryInputType } from './dtos/update-category.dto';
+import { CategoryEntity } from './category.entity';
+import { CategoryService } from './category.service';
 
 @Resolver((returns) => CategoryEntity)
 export class CategoryResolver {
@@ -19,23 +19,24 @@ export class CategoryResolver {
 
   @Query((returns) => [CategoryEntity])
   async getAllCategories(
-    @Args('input') inputDto: CommonInputDto,
+    @Args('input') { take = 10, page = 1 }: CommonInputDto,
   ): Promise<CategoryEntity[]> {
-    return await this.categoryService.getAll(inputDto);
+    return await this.categoryService.getAll({ take, page });
   }
 
   @Query((returns) => GetCategoryOutputType)
   async getCategoryById(
-    @Args('input') inputDto: GetCategoryByIdInput,
+    @Args('input') { id, take = 10, page = 1 }: GetCategoryByIdInput,
   ): Promise<GetCategoryOutputType> {
-    return await this.categoryService.getById(inputDto);
+    console.log(id);
+    return await this.categoryService.getById({ id, take, page });
   }
 
   @Query((returns) => GetCategoryOutputType)
   async getCategoryBySlug(
-    @Args('input') inputDto: GetCategoryBySlugInput,
+    @Args('input') { slug, take = 10, page = 1 }: GetCategoryBySlugInput,
   ): Promise<GetCategoryOutputType> {
-    return await this.categoryService.getBySlug(inputDto);
+    return await this.categoryService.getBySlug({ slug, take, page });
   }
 
   @Mutation((returns) => CommonOutputDto)

@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
 export class CoreEntity {
   @PrimaryGeneratedColumn()
@@ -19,4 +19,12 @@ export class CoreEntity {
   @Column({ default: true })
   @Field((type) => Boolean, { defaultValue: true })
   isActive: Boolean;
+}
+@InputType('GeoLocationInputType', { isAbstract: true })
+@ObjectType()
+export class GeoLocation {
+  @Field((type) => Number)
+  Latitude: number;
+  @Field((type) => Number)
+  Longitude: number;
 }

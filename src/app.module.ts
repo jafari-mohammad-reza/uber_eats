@@ -15,11 +15,12 @@ import { UserEntity } from './users/entities/user.entity';
 import { JwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
-import { CategoryModule } from './category/category.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { CategoryEntity } from './category/category.entity';
+import { CategoryModule } from './category/category.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
-import { RestaurantEntity } from './restaurant/entities/restaurant.entity';
+import { CategoryEntity } from './category/category.entity';
+import { RestaurantEntity } from './restaurant/restaurant.entity';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -28,11 +29,15 @@ import { RestaurantEntity } from './restaurant/entities/restaurant.entity';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      sortSchema: true,
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       playground: true,
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req, connection }) => {
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
+      },
       cors: {
         credentials: true,
         origin: true,
@@ -51,9 +56,10 @@ import { RestaurantEntity } from './restaurant/entities/restaurant.entity';
     MailModule,
     UsersModule,
     CommonModule,
-    RestaurantModule,
-    CategoryModule,
     CloudinaryModule,
+    CategoryModule,
+    RestaurantModule,
+    UploadsModule,
   ],
   providers: [JwtService],
 })
