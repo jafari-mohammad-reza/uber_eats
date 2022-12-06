@@ -1,10 +1,10 @@
-import { CoreEntity, GeoLocation } from '../../common/entities/core.entity';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { IsOptional, IsString } from 'class-validator';
-import { CloudinaryContent } from '../../cloudinary/models';
-import { CategoryEntity } from './category.entity';
-import { UserEntity } from '../../users/entities/user.entity';
+import { CoreEntity, GeoLocation } from '../common/entities/core.entity';
+import { CloudinaryContent } from '../cloudinary/models';
+import { CategoryEntity } from '../category/category.entity';
+import { UserEntity } from '../users/entities/user.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
