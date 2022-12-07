@@ -10,7 +10,6 @@ import { IsString } from 'class-validator';
 export class GetRestaurantOutput extends CommonOutputDto {
   @Field((type) => RestaurantEntity, { nullable: true })
   restaurant?: RestaurantEntity;
-  // dished down here
 }
 @ObjectType()
 export class GetRestaurantsOutput extends CommonOutputDto {

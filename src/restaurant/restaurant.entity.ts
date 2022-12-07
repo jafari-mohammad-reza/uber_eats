@@ -1,10 +1,12 @@
-import { CoreEntity, GeoLocation } from '../common/entities/core.entity';
+import { CoreEntity, GeoLocation, Rate } from '../common/entities/core.entity';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { IsObject, IsOptional, IsString } from 'class-validator';
 import { CloudinaryContent } from '../cloudinary/models';
 import { CategoryEntity } from '../category/category.entity';
-import { UserEntity } from '../users/entities/user.entity';
+import { UserEntity } from '../users/user.entity';
+import { MenuItemEntity } from '../menu-item/menu-item.entity';
+import { GraphQLFloat } from 'graphql/type';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -69,4 +71,22 @@ export class RestaurantEntity extends CoreEntity {
   owner: UserEntity;
   @RelationId((restaurant: RestaurantEntity) => restaurant.owner)
   ownerId: number;
+  @OneToMany((type) => MenuItemEntity, (menuItem) => menuItem.restaurant)
+  @Field((type) => [MenuItemEntity], { nullable: true })
+  menu: MenuItemEntity[];
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+    nullable: false,
+  })
+  @Field((type) => [Rate], { nullable: false })
+  ratings: Array<Rate>;
+  @Field((type) => GraphQLFloat, { name: 'averageRating', nullable: true })
+  averageRating?: number;
+  getAverageRatings() {
+    let totalStars = 0;
+    this.ratings.forEach((rate) => (totalStars += rate.stars));
+    this.averageRating = totalStars / this.ratings.length;
+  }
 }

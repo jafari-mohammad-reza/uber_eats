@@ -5,8 +5,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsLatitude, IsLongitude } from 'class-validator';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { IsLatitude, IsLongitude, IsNumber, Max, Min } from 'class-validator';
+import { GraphQLFloat } from 'graphql/type';
 
 export class CoreEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -32,4 +33,17 @@ export class GeoLocation {
   @Field((type) => Number)
   @IsLongitude()
   Longitude: number;
+}
+
+@InputType('RatingInputType', { isAbstract: true })
+@ObjectType()
+export class Rate {
+  @Field((type) => Int, { nullable: false })
+  @IsNumber()
+  userId: number;
+  @Field((type) => GraphQLFloat, { nullable: false })
+  @IsNumber()
+  @Min(0)
+  @Max(5)
+  stars: number;
 }

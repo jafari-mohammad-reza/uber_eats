@@ -15,13 +15,14 @@ import { JwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { UserEntity } from './users/entities/user.entity';
+import { UserEntity } from './users/user.entity';
 import { CategoryModule } from './category/category.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { RestaurantEntity } from './restaurant/restaurant.entity';
 import { CategoryEntity } from './category/category.entity';
-import { MenueItemModule } from './menue-item/menue-item.module';
+import { MenuItemModule } from './menu-item/menu-item.module';
+import { MenuItemEntity } from './menu-item/menu-item.entity';
 
 @Module({
   imports: [
@@ -50,7 +51,12 @@ import { MenueItemModule } from './menue-item/menue-item.module';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         synchronize: configService.get('NODE_ENV') !== 'prod',
-        entities: [UserEntity, CategoryEntity, RestaurantEntity],
+        entities: [
+          UserEntity,
+          CategoryEntity,
+          RestaurantEntity,
+          MenuItemEntity,
+        ],
       }),
     }),
     MailModule,
@@ -60,7 +66,7 @@ import { MenueItemModule } from './menue-item/menue-item.module';
     CategoryModule,
     RestaurantModule,
     UploadsModule,
-    MenueItemModule,
+    MenuItemModule,
   ],
   providers: [JwtService],
 })

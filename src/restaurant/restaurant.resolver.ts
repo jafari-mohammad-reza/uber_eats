@@ -15,10 +15,11 @@ import {
   UpdateRestaurantInputType,
 } from './dtos/modify-restaurant.dto';
 import { CurrentUser } from '../decorators/current-user/current-user.decorator';
-import { UserEntity } from '../users/entities/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { RightRoleGuard } from '../guards/right-role/right-role.guard';
 import { UseGuards } from '@nestjs/common';
 import { Role } from '../decorators/role/roles.decorator';
+import { RateInputType } from '../common/dtos/rate.dto';
 
 @Resolver((of) => RestaurantEntity)
 @UseGuards(RightRoleGuard)
@@ -69,5 +70,13 @@ export class RestaurantResolver {
     @CurrentUser() user: UserEntity,
   ): Promise<CommonOutputDto> {
     return await this.restaurantService.deleteRestaurant(id, user);
+  }
+  @Mutation((returns) => CommonOutputDto)
+  @Role(['Client'])
+  async rateRestaurant(
+    @CurrentUser() user: UserEntity,
+    @Args('input') input: RateInputType,
+  ): Promise<CommonOutputDto> {
+    return await this.restaurantService.rateRestaurant(user, input);
   }
 }

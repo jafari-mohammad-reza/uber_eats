@@ -20,7 +20,8 @@ import { GetCategoryByIdInput } from '../category/dtos/get-category.dto';
 import { CategoryEntity } from '../category/category.entity';
 import { CategoryService } from '../category/category.service';
 import { CloudinaryService } from '../cloudinary/clodinary.service';
-import { UserEntity } from '../users/entities/user.entity';
+import { UserEntity } from '../users/user.entity';
+import { RateInputType } from '../common/dtos/rate.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -43,8 +44,12 @@ export class RestaurantService {
 
   async getRestaurantById(id: number): Promise<GetRestaurantOutput> {
     try {
-      const restaurant = await this.restaurantRepository.findOneBy({ id });
-      // TODO : return dished as well
+      const restaurant = await this.restaurantRepository.findOne({
+        where: { id },
+        relations: ['menu', 'owner'],
+        loadEagerRelations: true,
+      });
+      restaurant.getAverageRatings();
       return {
         ok: true,
         restaurant,
@@ -68,9 +73,10 @@ export class RestaurantService {
           where: { title: Raw((title) => `${title} ILIKE '%${inputTitle}%'`) },
           skip: (page - 1) * take,
           take: take,
+          relations: ['menu', 'owner'],
+          loadEagerRelations: true,
         },
       );
-      // TODO : return dished as well
       return {
         ok: true,
         restaurants,
@@ -133,7 +139,7 @@ export class RestaurantService {
   ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(input.id);
-      if (user !== restaurant.owner) {
+      if (user.id !== restaurant.owner.id) {
         return {
           ok: false,
           error: 'You are not this restaurant owner',
@@ -187,7 +193,7 @@ export class RestaurantService {
   ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(id);
-      if (user !== restaurant.owner) {
+      if (user.id !== restaurant.owner.id) {
         return {
           ok: false,
           error: 'You are not this restaurant owner',
@@ -234,5 +240,38 @@ export class RestaurantService {
       take: take,
       skip: (page - 1) * take,
     });
+  }
+
+  async rateRestaurant(
+    user: UserEntity,
+    { targetId, stars }: RateInputType,
+  ): Promise<CommonOutputDto> {
+    try {
+      const restaurant = await this.restaurantRepository.findOneBy({
+        id: targetId,
+      });
+      if (!restaurant)
+        return { ok: false, error: 'There is no restaurant with this id' };
+      const existRate = restaurant.ratings.find(
+        (ratings) => ratings.userId === user.id,
+      );
+      if (!existRate) {
+        await this.restaurantRepository.update(restaurant.id, {
+          ratings: [...restaurant.ratings, { userId: user.id, stars }],
+        });
+      } else {
+        existRate.stars = stars;
+        await restaurant.save();
+      }
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err.message,
+      };
+    }
   }
 }

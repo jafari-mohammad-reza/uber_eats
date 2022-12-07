@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity } from './user.entity';
 import { FindOptionsSelect, Repository } from 'typeorm';
 import { RegisterUserInput } from './dtos/register-user.dto';
 import { JwtService } from '@nestjs/jwt';

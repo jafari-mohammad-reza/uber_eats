@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../user.entity';
 import { CommonOutputDto } from '../../common/dtos/commonOutputDto';
 
 @InputType()

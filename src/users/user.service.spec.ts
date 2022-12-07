@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity, UserRoles } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../mail/mail.service';
 import { MockRepositoryType } from '../common/types/testing.types';
@@ -54,7 +54,7 @@ describe('UserService', function () {
         email: 'test@test.com',
         password: 'Test123',
         confirmPassword: 'Test123',
-        role: 0,
+        role: UserRoles.Client,
       });
       expect(result).toMatchObject({ ok: true, error: null });
     });
@@ -67,7 +67,7 @@ describe('UserService', function () {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 0,
+        role: UserRoles.Client,
       });
       expect(result).toMatchObject({
         ok: false,
@@ -81,7 +81,7 @@ describe('UserService', function () {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 0,
+        role: UserRoles.Client,
       });
       expect(result).toMatchObject({ ok: false, error: error.message });
     });

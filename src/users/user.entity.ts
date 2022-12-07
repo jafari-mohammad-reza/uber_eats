@@ -5,10 +5,10 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { CoreEntity } from '../../common/entities/core.entity';
+import { CoreEntity } from '../common/entities/core.entity';
 import { IsEmail, IsEnum, IsString, Length, Matches } from 'class-validator';
 import * as bcrypt from 'bcrypt';
-import { RestaurantEntity } from '../../restaurant/restaurant.entity';
+import { RestaurantEntity } from '../restaurant/restaurant.entity';
 
 export enum UserRoles {
   Client = 'Client',

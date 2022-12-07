@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { AllowedRoles } from '../../decorators/role/roles.decorator';
-import { UserEntity, UserRoles } from '../../users/entities/user.entity';
+import { UserEntity, UserRoles } from '../../users/user.entity';
 
 @Injectable()
 export class RightRoleGuard implements CanActivate {
