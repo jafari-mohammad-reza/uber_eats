@@ -1,22 +1,24 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MenuItemEntity } from './menu-item.entity';
 import { Repository } from 'typeorm';
 import { GetMenuItemOutPut } from './dtos/get-menuItem.dto';
-import { RestaurantService } from '../restaurant/restaurant.service';
 import { UserEntity } from '../users/user.entity';
 import { CreateMenuItemInputType } from './dtos/create-menu-item-input.type';
 import { CommonOutputDto } from '../common/dtos/commonOutputDto';
 import { UpdateMenuItemInput } from './dtos/update-menuItem.dto';
 import { RateInputType } from '../common/dtos/rate.dto';
+import { RestaurantEntity } from '../restaurant/restaurant.entity';
+import { CloudinaryService } from '../cloudinary/clodinary.service';
 
 @Injectable()
 export class MenuItemService {
   constructor(
     @InjectRepository(MenuItemEntity)
     private readonly menuItemRepository: Repository<MenuItemEntity>,
-    @Inject(forwardRef(() => RestaurantService))
-    private readonly restaurantService: RestaurantService,
+    @InjectRepository(RestaurantEntity)
+    private readonly restaurantRepository: Repository<RestaurantEntity>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
   async getById(id: number): Promise<GetMenuItemOutPut> {
     try {
@@ -46,9 +48,9 @@ export class MenuItemService {
     }: CreateMenuItemInputType,
   ): Promise<CommonOutputDto> {
     try {
-      const { restaurant } = await this.restaurantService.getRestaurantById(
-        restaurantId,
-      );
+      const restaurant = await this.restaurantRepository.findOneBy({
+        id: restaurantId,
+      });
 
       if (!restaurant) {
         return { ok: false, error: 'There is no restaurant with this id' };
@@ -98,6 +100,13 @@ export class MenuItemService {
           error: 'You are not owner of this restaurant',
         };
       }
+      if (menuItem.coverImage && input.coverImage) {
+        this.cloudinaryService
+          .removeContent(menuItem.coverImage.publicId)
+          .catch((err) => {
+            console.log(err);
+          });
+      }
       await this.menuItemRepository.update(menuItem.id, { ...input });
       return {
         ok: true,
@@ -128,6 +137,13 @@ export class MenuItemService {
           ok: false,
           error: 'You are not owner of this restaurant',
         };
+      }
+      if (menuItem.coverImage) {
+        this.cloudinaryService
+          .removeContent(menuItem.coverImage.publicId)
+          .catch((err) => {
+            console.log(err);
+          });
       }
       await this.menuItemRepository.delete(menuItem.id);
       return {

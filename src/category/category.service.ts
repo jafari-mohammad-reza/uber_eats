@@ -15,7 +15,6 @@ import {
   GetCategoryOutputType,
 } from './dtos/get-category.dto';
 import { CloudinaryService } from '../cloudinary/clodinary.service';
-import { DefaultImage } from '../common/constants';
 
 @Injectable()
 export class CategoryService {
@@ -30,19 +29,6 @@ export class CategoryService {
       take: take,
       skip: (page - 1) * take,
     });
-  }
-
-  async getOrCreate(category: string): Promise<CategoryEntity> {
-    const existCategory = await this.categoryRepository.findOneBy({
-      title: category,
-    });
-    if (!existCategory) {
-      return await this.categoryRepository.save({
-        title: category,
-        image: DefaultImage,
-      });
-    }
-    return existCategory;
   }
 
   async getById({
@@ -121,7 +107,6 @@ export class CategoryService {
           error: 'There is already one category with this title',
         };
       } else {
-        const stringifyImage = JSON.stringify(image);
         await this.categoryRepository.save({ title, image });
         return {
           ok: true,
@@ -189,11 +174,13 @@ export class CategoryService {
           error: 'There is no category with this id',
         };
       }
-      this.cloudinaryService
-        .removeContent(existCategory.image.publicId)
-        .catch((err) => {
-          console.log(err);
-        });
+      if (existCategory.image) {
+        this.cloudinaryService
+          .removeContent(existCategory.image.publicId)
+          .catch((err) => {
+            console.log(err);
+          });
+      }
       await this.categoryRepository.delete({ id });
       return {
         ok: true,

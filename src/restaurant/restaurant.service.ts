@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RestaurantEntity } from './restaurant.entity';
 import { Raw, Repository } from 'typeorm';
@@ -18,18 +18,18 @@ import {
 } from './dtos/get-restaurant.dto';
 import { GetCategoryByIdInput } from '../category/dtos/get-category.dto';
 import { CategoryEntity } from '../category/category.entity';
-import { CategoryService } from '../category/category.service';
 import { CloudinaryService } from '../cloudinary/clodinary.service';
 import { UserEntity } from '../users/user.entity';
 import { RateInputType } from '../common/dtos/rate.dto';
+import { DefaultImage } from '../common/constants';
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(RestaurantEntity)
     private readonly restaurantRepository: Repository<RestaurantEntity>,
-    @Inject(forwardRef(() => CategoryService))
-    private readonly categoryService: CategoryService,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
   async getAllRestaurants({
@@ -49,7 +49,14 @@ export class RestaurantService {
         relations: ['menu', 'owner'],
         loadEagerRelations: true,
       });
-      restaurant.getAverageRatings();
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'There is no restaurant with this id',
+        };
+      }
+
+      restaurant.getAverageRatings && restaurant.getAverageRatings();
       return {
         ok: true,
         restaurant,
@@ -92,35 +99,23 @@ export class RestaurantService {
   }
 
   async createRestaurant(
-    {
-      title,
-      coverImage,
-      category,
-      description,
-      address,
-      geoLocation,
-      teaserVideo,
-    }: CreateRestaurantInputType,
+    input: CreateRestaurantInputType,
     owner: UserEntity,
   ): Promise<CommonOutputDto> {
     try {
-      if (await this.restaurantRepository.findOneBy({ title }))
+      if (await this.restaurantRepository.findOneBy({ title: input.title }))
         return {
           ok: false,
           error: 'There already one restaurant with this title',
         };
-      const existCategory = await this.categoryService.getOrCreate(category);
-      const createdRestaurant = await this.restaurantRepository.create({
-        teaserVideo,
-        title,
-        description,
-        address,
-        geoLocation,
-        coverImage,
-      });
-      createdRestaurant.category = existCategory;
-      createdRestaurant.owner = owner;
-      await this.restaurantRepository.save(createdRestaurant);
+      const existCategory = await this.getOrCreateCategory(input.category);
+      await this.restaurantRepository.save([
+        {
+          ...input,
+          category: existCategory,
+          owner,
+        },
+      ]);
       return {
         ok: true,
         error: null,
@@ -139,21 +134,23 @@ export class RestaurantService {
   ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(input.id);
-      if (user.id !== restaurant.owner.id) {
-        return {
-          ok: false,
-          error: 'You are not this restaurant owner',
-        };
-      }
       if (!restaurant) {
         return {
           ok: false,
           error: 'There is no restaurant with this id',
         };
       }
+      if (user.id !== restaurant.owner.id) {
+        return {
+          ok: false,
+          error: 'You are not this restaurant owner',
+        };
+      }
       let category: CategoryEntity = null;
       if (input.category) {
-        category = await this.categoryService.getOrCreate(input.category);
+        category = await this.getOrCreateCategory(input.category);
+      } else {
+        category = restaurant.category;
       }
       if (input.coverImage) {
         this.cloudinaryService
@@ -193,26 +190,32 @@ export class RestaurantService {
   ): Promise<CommonOutputDto> {
     try {
       const { restaurant } = await this.getRestaurantById(id);
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'There is no restaurant with this id',
+        };
+      }
       if (user.id !== restaurant.owner.id) {
         return {
           ok: false,
           error: 'You are not this restaurant owner',
         };
       }
-      if (!restaurant)
-        return { ok: false, error: 'There is no restaurant with this id' };
-      this.cloudinaryService
-        .removeContent(restaurant.coverImage.publicId)
-        .catch((err) => {
-          console.log(err);
-        });
-      if (restaurant.teaserVideo) {
+      restaurant.coverImage &&
+        this.cloudinaryService
+          .removeContent(restaurant.coverImage.publicId)
+          .catch((err) => {
+            console.log(err);
+          });
+
+      restaurant.teaserVideo &&
         this.cloudinaryService
           .removeContent(restaurant.teaserVideo.publicId)
           .catch((err) => {
             console.log(err);
           });
-      }
+
       await this.restaurantRepository.delete(restaurant.id);
       return {
         ok: true,
@@ -273,5 +276,18 @@ export class RestaurantService {
         error: err.message,
       };
     }
+  }
+
+  async getOrCreateCategory(category: string): Promise<CategoryEntity> {
+    const existCategory = await this.categoryRepository.findOneBy({
+      title: category,
+    });
+    if (!existCategory) {
+      return await this.categoryRepository.save({
+        title: category,
+        image: DefaultImage,
+      });
+    }
+    return existCategory;
   }
 }

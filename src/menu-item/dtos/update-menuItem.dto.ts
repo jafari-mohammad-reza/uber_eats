@@ -8,6 +8,7 @@ export class UpdateMenuItemInput extends PickType(PartialType(MenuItemEntity), [
   'options',
   'price',
   'description',
+  'coverImage',
 ]) {
   @Field((type) => Int, { nullable: false })
   @IsNumber()

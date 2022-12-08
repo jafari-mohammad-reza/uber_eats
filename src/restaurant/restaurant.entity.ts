@@ -85,6 +85,9 @@ export class RestaurantEntity extends CoreEntity {
   @Field((type) => GraphQLFloat, { name: 'averageRating', nullable: true })
   averageRating?: number;
   getAverageRatings() {
+    if (this.ratings.length === 0) {
+      this.averageRating = 0;
+    }
     let totalStars = 0;
     this.ratings.forEach((rate) => (totalStars += rate.stars));
     this.averageRating = totalStars / this.ratings.length;
