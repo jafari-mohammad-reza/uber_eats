@@ -23,6 +23,9 @@ import { RestaurantEntity } from './restaurant/restaurant.entity';
 import { CategoryEntity } from './category/category.entity';
 import { MenuItemModule } from './menu-item/menu-item.module';
 import { MenuItemEntity } from './menu-item/menu-item.entity';
+import { OrdersModule } from './orders/orders.module';
+import { OrderEntity } from './orders/entities/order.entity';
+import { OrderItemEntity } from './orders/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -56,6 +59,8 @@ import { MenuItemEntity } from './menu-item/menu-item.entity';
           CategoryEntity,
           RestaurantEntity,
           MenuItemEntity,
+          OrderEntity,
+          OrderItemEntity,
         ],
       }),
     }),
@@ -67,6 +72,7 @@ import { MenuItemEntity } from './menu-item/menu-item.entity';
     RestaurantModule,
     UploadsModule,
     MenuItemModule,
+    OrdersModule,
   ],
   providers: [JwtService],
 })

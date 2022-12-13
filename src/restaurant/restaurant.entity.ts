@@ -7,6 +7,7 @@ import { CategoryEntity } from '../category/category.entity';
 import { UserEntity } from '../users/user.entity';
 import { MenuItemEntity } from '../menu-item/menu-item.entity';
 import { GraphQLFloat } from 'graphql/type';
+import { OrderEntity } from '../orders/entities/order.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -84,6 +85,11 @@ export class RestaurantEntity extends CoreEntity {
   ratings: Array<Rate>;
   @Field((type) => GraphQLFloat, { name: 'averageRating', nullable: true })
   averageRating?: number;
+  @OneToMany((type) => OrderEntity, (order) => order.restaurant, {
+    nullable: true,
+  })
+  @Field((type) => [OrderEntity], { nullable: true })
+  orders?: OrderEntity[];
   getAverageRatings() {
     if (this.ratings.length === 0) {
       this.averageRating = 0;

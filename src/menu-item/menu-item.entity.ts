@@ -1,5 +1,5 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, RelationId } from 'typeorm';
 import { CoreEntity, Rate } from '../common/entities/core.entity';
 import {
   IsArray,
@@ -12,6 +12,7 @@ import {
 import { GraphQLFloat } from 'graphql/type';
 import { CloudinaryContent } from '../cloudinary/models';
 import { RestaurantEntity } from '../restaurant/restaurant.entity';
+import { OrderEntity } from '../orders/entities/order.entity';
 
 @InputType('MenuItemChoiceInputType', { isAbstract: true })
 @ObjectType()
@@ -79,6 +80,8 @@ export class MenuItemEntity extends CoreEntity {
   ratings: Array<Rate>;
   @Field((type) => GraphQLFloat, { name: 'averageRating', nullable: true })
   averageRating?: number;
+  @ManyToMany((type) => OrderEntity, (order) => order.items)
+  orders: OrderEntity[];
   getAverageRatings() {
     let totalStars = 0;
     this.ratings.forEach((rate) => (totalStars += rate.stars));

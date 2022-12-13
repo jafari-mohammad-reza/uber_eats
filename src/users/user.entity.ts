@@ -9,6 +9,7 @@ import { CoreEntity } from '../common/entities/core.entity';
 import { IsEmail, IsEnum, IsString, Length, Matches } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import { RestaurantEntity } from '../restaurant/restaurant.entity';
+import { OrderEntity } from '../orders/entities/order.entity';
 
 export enum UserRoles {
   Client = 'Client',
@@ -78,6 +79,16 @@ export class UserEntity extends CoreEntity {
   @OneToMany((type) => RestaurantEntity, (restaurant) => restaurant.owner)
   @Field((type) => [RestaurantEntity])
   restaurants: RestaurantEntity[];
+  @OneToMany((type) => OrderEntity, (order) => order.customer, {
+    nullable: true,
+  })
+  @Field((type) => [OrderEntity], { nullable: true })
+  orders?: OrderEntity[];
+  @OneToMany((type) => OrderEntity, (order) => order.customer, {
+    nullable: true,
+  })
+  @Field((type) => [OrderEntity], { nullable: true })
+  rides?: OrderEntity[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
