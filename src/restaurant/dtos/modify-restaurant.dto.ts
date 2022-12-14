@@ -1,6 +1,6 @@
-import { Field, InputType, Int, PartialType, PickType } from '@nestjs/graphql';
+import { Field, InputType, PartialType, PickType } from '@nestjs/graphql';
 import { RestaurantEntity } from '../restaurant.entity';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateRestaurantInputType extends PickType(RestaurantEntity, [
@@ -25,15 +25,9 @@ export class UpdateRestaurantInputType extends PickType(
     'teaserVideo',
     'geoLocation',
     'title',
+    'id',
   ],
 ) {
-  @Field((type) => Int, {
-    nullable: false,
-    name: 'id',
-  })
-  @IsNumber()
-  id: number;
-
   @Field((type) => String, { nullable: true })
   @IsString()
   @IsOptional()

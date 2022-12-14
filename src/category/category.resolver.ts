@@ -12,9 +12,9 @@ import {
 } from './dtos/get-category.dto';
 import { CategoryEntity } from './category.entity';
 import { CategoryService } from './category.service';
+import { Role } from '../decorators/role/roles.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RightRoleGuard } from '../guards/right-role/right-role.guard';
-import { Role } from '../decorators/role/roles.decorator';
 
 @Resolver((returns) => CategoryEntity)
 @UseGuards(RightRoleGuard)

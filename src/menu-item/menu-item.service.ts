@@ -48,14 +48,17 @@ export class MenuItemService {
     }: CreateMenuItemInputType,
   ): Promise<CommonOutputDto> {
     try {
-      const restaurant = await this.restaurantRepository.findOneBy({
-        id: restaurantId,
+      const restaurant = await this.restaurantRepository.findOne({
+        where: {
+          id: restaurantId,
+        },
+        relations: ['owner'],
       });
 
       if (!restaurant) {
         return { ok: false, error: 'There is no restaurant with this id' };
       }
-      if (user.id !== restaurant.owner.id) {
+      if (user.id !== restaurant.owner['id']) {
         return { ok: false, error: 'You are not this restaurant owner' };
       }
       await this.menuItemRepository.save(

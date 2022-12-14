@@ -5,6 +5,8 @@ import { OrdersService } from './orders.service';
 import { RestaurantEntity } from '../restaurant/restaurant.entity';
 import { OrderItemEntity } from './entities/order-item.entity';
 import { MenuItemEntity } from '../menu-item/menu-item.entity';
+import { OrdersResolver } from './orders.resolver';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -14,7 +16,8 @@ import { MenuItemEntity } from '../menu-item/menu-item.entity';
       OrderItemEntity,
       MenuItemEntity,
     ]),
+    UsersModule,
   ],
-  providers: [OrdersService],
+  providers: [OrdersService, OrdersResolver],
 })
 export class OrdersModule {}

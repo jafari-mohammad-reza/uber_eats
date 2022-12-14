@@ -9,8 +9,11 @@ import { UserEntity } from '../users/user.entity';
 import { UpdateMenuItemInput } from './dtos/update-menuItem.dto';
 import { Role } from '../decorators/role/roles.decorator';
 import { RateInputType } from '../common/dtos/rate.dto';
+import { UseGuards } from '@nestjs/common';
+import { RightRoleGuard } from '../guards/right-role/right-role.guard';
 
 @Resolver((of) => MenuItemEntity)
+@UseGuards(RightRoleGuard)
 export class MenuItemResolver {
   constructor(private readonly menuItemService: MenuItemService) {}
   @Query((returns) => GetMenuItemOutPut)
@@ -18,6 +21,7 @@ export class MenuItemResolver {
     return await this.menuItemService.getById(id);
   }
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Owner'])
   async createMenuItem(
     @CurrentUser() user: UserEntity,
     @Args('input') input: CreateMenuItemInputType,
@@ -25,6 +29,7 @@ export class MenuItemResolver {
     return await this.menuItemService.createMenuItem(user, input);
   }
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Owner'])
   async updateMenuItem(
     @CurrentUser() user: UserEntity,
     @Args('input') input: UpdateMenuItemInput,
@@ -32,6 +37,7 @@ export class MenuItemResolver {
     return await this.menuItemService.updateMenuItem(user, input);
   }
   @Mutation((returns) => CommonOutputDto)
+  @Role(['Owner'])
   async deleteMenuItem(
     @CurrentUser() user: UserEntity,
     @Args('id') id: number,

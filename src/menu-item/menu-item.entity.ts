@@ -54,6 +54,7 @@ export class MenuItemEntity extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   @Field((type) => String, { nullable: true })
   @Length(5, 140)
+  @IsOptional()
   description?: string;
 
   @Field((type) => RestaurantEntity)

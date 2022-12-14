@@ -5,9 +5,13 @@ import { CloudinaryService } from '../cloudinary/clodinary.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MenuItemEntity } from './menu-item.entity';
 import { RestaurantEntity } from '../restaurant/restaurant.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuItemEntity, RestaurantEntity])],
+  imports: [
+    TypeOrmModule.forFeature([MenuItemEntity, RestaurantEntity]),
+    UsersModule,
+  ],
   providers: [MenuItemService, MenuItemResolver, CloudinaryService],
 })
 export class MenuItemModule {}

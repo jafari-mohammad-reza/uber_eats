@@ -43,7 +43,9 @@ export class UsersService {
     password,
   }: LoginUserInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
-      const existUser: UserEntity | null = await this.findUserByEmail(email);
+      const existUser: UserEntity | null = await this.userRepository.findOneBy({
+        email,
+      });
       if (!existUser)
         return {
           ok: false,
@@ -73,7 +75,15 @@ export class UsersService {
     email: string,
     select?: FindOptionsSelect<UserEntity>,
   ): Promise<UserEntity | null> {
-    return await this.userRepository.findOne({ where: { email }, select });
+    return await this.userRepository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        restaurants: true,
+      },
+    });
   }
 
   async decodeToken(token: string): Promise<Object> {

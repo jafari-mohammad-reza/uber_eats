@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { MailService } from '../mail/mail.service';
+import { RightRoleGuard } from '../guards/right-role/right-role.guard';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 
 @Module({
   imports: [
@@ -22,7 +24,13 @@ import { MailService } from '../mail/mail.service';
       verifyOptions: { algorithms: ['RS256'] },
     }),
   ],
-  providers: [UsersService, UsersResolver, MailService],
+  providers: [
+    UsersService,
+    UsersResolver,
+    MailService,
+
+    { provide: GUARDS_METADATA, useClass: RightRoleGuard },
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}

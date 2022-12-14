@@ -140,7 +140,7 @@ export class RestaurantService {
           error: 'There is no restaurant with this id',
         };
       }
-      if (user.id !== restaurant.owner.id) {
+      if (user.id !== restaurant.owner['id']) {
         return {
           ok: false,
           error: 'You are not this restaurant owner',
@@ -196,7 +196,7 @@ export class RestaurantService {
           error: 'There is no restaurant with this id',
         };
       }
-      if (user.id !== restaurant.owner.id) {
+      if (user.id !== restaurant.owner['id']) {
         return {
           ok: false,
           error: 'You are not this restaurant owner',

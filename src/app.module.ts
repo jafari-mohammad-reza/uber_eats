@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { JwtMiddleware } from './middlewares/jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
@@ -26,6 +20,8 @@ import { MenuItemEntity } from './menu-item/menu-item.entity';
 import { OrdersModule } from './orders/orders.module';
 import { OrderEntity } from './orders/entities/order.entity';
 import { OrderItemEntity } from './orders/entities/order-item.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthorizeUserInterceptor } from './interceptors/authorize-user/authorize-user.interceptor';
 
 @Module({
   imports: [
@@ -37,10 +33,22 @@ import { OrderItemEntity } from './orders/entities/order-item.entity';
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       playground: true,
-      context: ({ req }) => ({ user: req['user'] }),
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect: (connectionParams) => {
+            return { token: connectionParams['x-jwt'] };
+          },
+        },
+      },
       cors: {
         credentials: true,
         origin: true,
+      },
+      context: ({ req }) => {
+        return {
+          token: req.headers['x-jwt'],
+          user: req.headers['user'],
+        };
       },
     }),
     TypeOrmModule.forRootAsync({
@@ -74,12 +82,10 @@ import { OrderItemEntity } from './orders/entities/order-item.entity';
     MenuItemModule,
     OrdersModule,
   ],
-  providers: [JwtService],
+  providers: [
+    JwtService,
+    { provide: APP_INTERCEPTOR, useClass: AuthorizeUserInterceptor },
+  ],
+  exports: [UsersModule],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): any {
-    consumer
-      .apply(JwtMiddleware)
-      .forRoutes({ path: '/graphql', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}
