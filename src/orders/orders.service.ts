@@ -122,7 +122,7 @@ export class OrdersService {
         const menuItem = await this.menuItemRepository.findOneBy({
           id: item.menuItemId,
         });
-        if (menuItem.restaurant.id !== restaurantId) {
+        if (menuItem.restaurantId !== restaurantId) {
           return {
             ok: false,
             error: "This restaurant does not have this item in it's menu",
@@ -175,9 +175,9 @@ export class OrdersService {
           items: selectedMenuItems,
         }),
       );
-      await this.pubSub.publish(NEW_PENDING_ORDER, {
+       await this.pubSub.publish(NEW_PENDING_ORDER, {
         pendingOrders: newOrder,
-        ownerId: restaurant.owner.id,
+        ownerId: restaurant.ownerId['id'],
       });
       return {
         ok: true,

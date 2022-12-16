@@ -16,6 +16,7 @@ import {
 } from './dtos/reset-password.dto';
 import { EmailDto } from './dtos/email.dto';
 import { VerifyUserDto } from './dtos/verify-user.dto';
+import {RateLimit} from "nestjs-graphql-rate-limit";
 
 @Resolver((resolver) => UserEntity)
 export class UsersResolver {

@@ -1,3 +1,16 @@
 # Uber Eats
 
-### uber eats inspired application build with NestJs and Graphql using tools like Jest, Cloudinary Sdk, TypeOrm, Jwt, Docker, PostgresQl & Redis plus websockets
+#### Uber Eats clone Created by Nest.js & GraphQl 
+
+##### Technologies that i have used in this project
+* Nest.Js
+* GraphQl
+* WebSockets
+* TypeOrm
+* Cloudinary
+* JWT 
+* Jest
+* Docker 
+* PostgresQl
+* PgAmin
+* Pm2  

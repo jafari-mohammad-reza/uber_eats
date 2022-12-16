@@ -9,6 +9,9 @@ import { join } from 'path';
 import { MailService } from '../mail/mail.service';
 import { RightRoleGuard } from '../guards/right-role/right-role.guard';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
+import {ThrottlerModule, ThrottlerStorage, ThrottlerStorageService} from "@nestjs/throttler";
+import {ThrottlerStorageProvider} from "@nestjs/throttler/dist/throttler.providers";
+import {Reflector} from "@nestjs/core";
 
 @Module({
   imports: [
@@ -28,7 +31,6 @@ import { GUARDS_METADATA } from '@nestjs/common/constants';
     UsersService,
     UsersResolver,
     MailService,
-
     { provide: GUARDS_METADATA, useClass: RightRoleGuard },
   ],
   exports: [UsersService],

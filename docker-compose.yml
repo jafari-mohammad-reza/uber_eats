@@ -1,5 +1,27 @@
 version: "3.8"
 services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: uber_eats_api
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    environment:
+       NODE_ENV: production
+       POSTGRES_USER: admin
+       POSTGRES_PASSWORD: admin
+       POSTGRES_DB_NAME: uber_eats
+       POSTGRES_DB_HOST: postgres
+       POSTGRES_DB_PORT: 5432
+    networks:
+      uber_network:
+    depends_on:
+      - uber_postgres
+    ports:
+      - '3000:3000'
   uber_postgres:
     image: postgres
     container_name: postgres
@@ -10,7 +32,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: uber_eats
-    network_mode: bridge
+    networks:
+      uber_network:
     volumes:
       - postgres:/var/lib/postgresql/data
   uber_pgadmin:
@@ -22,24 +45,18 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    network_mode: bridge
+    networks:
+      uber_network:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - uber_postgres
-  uber_redis:
-    image: redis:alpine
-    command:
-      - redis-server
-    ports:
-      - "6379:6379"
-    container_name: main_Redis
-    network_mode: bridge
-    volumes:
-      - redis-data:/data
-      - redis-conf:/usr/local/etc/redis/redis.conf
+networks:
+  uber_network:
+    internal: false
+    name: uber_network
+    driver: bridge
 volumes:
   postgres:
   pgadmin-data:
   redis-data:
-  redis-conf:

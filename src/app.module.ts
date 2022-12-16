@@ -20,7 +20,7 @@ import { MenuItemEntity } from './menu-item/menu-item.entity';
 import { OrdersModule } from './orders/orders.module';
 import { OrderEntity } from './orders/entities/order.entity';
 import { OrderItemEntity } from './orders/entities/order-item.entity';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import { AuthorizeUserInterceptor } from './interceptors/authorize-user/authorize-user.interceptor';
 
 @Module({
@@ -72,6 +72,7 @@ import { AuthorizeUserInterceptor } from './interceptors/authorize-user/authoriz
         ],
       }),
     }),
+
     MailModule,
     UsersModule,
     CommonModule,
